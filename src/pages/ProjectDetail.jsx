@@ -655,31 +655,24 @@ export default function ProjectDetail({ user, project, tasks, onBack, onAddProce
       )}
 
       {/* ── Header ───────────────────────────────────────────────── */}
-      <div style={{ background:t.card, borderBottom:`1px solid ${t.border}`, padding:isMobile?'14px 16px 0':'18px 28px 0', flexShrink:0, boxShadow:`0 2px 8px rgba(0,0,0,0.1)` }}>
-        <button onClick={onBack} style={{ background:'none', border:'none', color:t.muted, cursor:'pointer', display:'flex', alignItems:'center', gap:6, fontSize:13, marginBottom:14, padding:0, fontFamily:'inherit', fontWeight:500 }}>
-          ‹ Proiecte
-        </button>
-        <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', flexWrap:'wrap', gap:12, marginBottom:16 }}>
-          <div style={{ flex:1, minWidth:0 }}>
-            <h1 style={{ fontSize:20, fontWeight:800, letterSpacing:'-0.4px', margin:'0 0 8px' }}>{project.name}</h1>
-            <div style={{ display:'flex', gap:16, flexWrap:'wrap', alignItems:'center' }}>
-              <span style={{ fontSize:11, color:t.accent, fontWeight:700, fontFamily:"'DM Mono',monospace", background:`${t.accent}18`, padding:'2px 9px', borderRadius:6 }}>{project.certificat}</span>
-              <span style={{ fontSize:12, color:t.muted }}>📍 {project.address}</span>
-              <span style={{ fontSize:12, color:t.muted }}>⏰ Exp: {fmt(project.dataExpirare)}</span>
-              {flaggedCount > 0 && (
-                <span style={{ fontSize:12, color:t.red, fontWeight:700, background:`${t.red}18`, padding:'2px 9px', borderRadius:6, border:`1px solid ${t.red}33` }}>
-                  🚩 {flaggedCount} problemă{flaggedCount!==1?'':''}
-                </span>
-              )}
-            </div>
-          </div>
-          <div style={{ display:'flex', alignItems:'center', gap:12, flexShrink:0 }}>
+      <div style={{ background:t.card, borderBottom:`1px solid ${t.border}`, padding:isMobile?'10px 16px 0':'18px 28px 0', flexShrink:0, boxShadow:`0 2px 8px rgba(0,0,0,0.1)` }}>
+
+        {/* Back + progress row */}
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom: isMobile ? 8 : 14 }}>
+          <button onClick={onBack} style={{ background:'none', border:'none', color:t.muted, cursor:'pointer', display:'flex', alignItems:'center', gap:6, fontSize:13, padding:0, fontFamily:'inherit', fontWeight:500 }}>
+            ‹ Proiecte
+          </button>
+          {/* Progress compact — always visible */}
+          <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+            {flaggedCount > 0 && (
+              <span style={{ fontSize:11, color:t.red, fontWeight:700, background:`${t.red}18`, padding:'2px 8px', borderRadius:6 }}>🚩 {flaggedCount}</span>
+            )}
             <div style={{ textAlign:'right' }}>
-              <div style={{ fontSize:22, fontWeight:800, color:pct>=target?t.green:pct>=target*0.6?t.orange:t.red, lineHeight:1 }}>{pct}%</div>
-              <div style={{ fontSize:10, color:t.muted, fontWeight:600 }}>din {target}% target</div>
+              <div style={{ fontSize: isMobile ? 16 : 22, fontWeight:800, color:pct>=target?t.green:pct>=target*0.6?t.orange:t.red, lineHeight:1 }}>{pct}%</div>
+              <div style={{ fontSize:9, color:t.muted, fontWeight:600 }}>din {target}%</div>
             </div>
-            <div style={{ width:48, height:48 }}>
-              <svg width="48" height="48" viewBox="0 0 48 48">
+            <div style={{ width: isMobile?36:48, height: isMobile?36:48 }}>
+              <svg width={isMobile?36:48} height={isMobile?36:48} viewBox="0 0 48 48">
                 <circle cx="24" cy="24" r="19" fill="none" stroke={t.border} strokeWidth="5" />
                 <circle cx="24" cy="24" r="19" fill="none"
                   stroke={pct>=target?t.green:pct>=target*0.6?t.orange:t.red}
@@ -691,6 +684,28 @@ export default function ProjectDetail({ user, project, tasks, onBack, onAddProce
             <Badge status={project.status} />
           </div>
         </div>
+
+        {/* Title — truncated on mobile */}
+        {isMobile ? (
+          <div style={{ marginBottom:10 }}>
+            <div style={{ fontSize:15, fontWeight:800, color:t.text, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis', marginBottom:4 }}>{project.name}</div>
+            <div style={{ display:'flex', gap:8, alignItems:'center', flexWrap:'nowrap', overflow:'hidden' }}>
+              <span style={{ fontSize:10, color:t.accent, fontWeight:700, fontFamily:"'DM Mono',monospace", background:`${t.accent}18`, padding:'1px 7px', borderRadius:5, flexShrink:0 }}>{project.certificat}</span>
+              <span style={{ fontSize:11, color:t.muted, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>⏰ {fmt(project.dataExpirare)}</span>
+            </div>
+          </div>
+        ) : (
+          <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', flexWrap:'wrap', gap:12, marginBottom:16 }}>
+            <div style={{ flex:1, minWidth:0 }}>
+              <h1 style={{ fontSize:20, fontWeight:800, letterSpacing:'-0.4px', margin:'0 0 8px' }}>{project.name}</h1>
+              <div style={{ display:'flex', gap:16, flexWrap:'wrap', alignItems:'center' }}>
+                <span style={{ fontSize:11, color:t.accent, fontWeight:700, fontFamily:"'DM Mono',monospace", background:`${t.accent}18`, padding:'2px 9px', borderRadius:6 }}>{project.certificat}</span>
+                <span style={{ fontSize:12, color:t.muted }}>📍 {project.address}</span>
+                <span style={{ fontSize:12, color:t.muted }}>⏰ Exp: {fmt(project.dataExpirare)}</span>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Tabs */}
         <div style={{ display:'flex', alignItems:'flex-end', overflowX:'auto' }}>
