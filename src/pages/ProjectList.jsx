@@ -278,27 +278,17 @@ export default function ProjectList({ user, projects, onOpen, onAdd, onDelete, o
 
           return (
             <div key={p.id}
-              style={{ background:t.card, border:`1px solid ${t.border}`, borderRadius:20, overflow:'hidden', cursor:'pointer', transition:'all 0.2s', boxShadow:t.shadow, position:'relative' }}
+              style={{ background:t.card, border:`1px solid ${t.border}`, borderRadius:20, overflow:'hidden', cursor:'pointer', transition:'all 0.2s', boxShadow:t.shadow }}
               onClick={() => onOpen(p.id)}
               onMouseEnter={e => { e.currentTarget.style.transform='translateY(-4px)'; e.currentTarget.style.boxShadow=`0 16px 40px rgba(0,0,0,0.3)`; e.currentTarget.style.borderColor=t.accent }}
               onMouseLeave={e => { e.currentTarget.style.transform='translateY(0)'; e.currentTarget.style.boxShadow=t.shadow; e.currentTarget.style.borderColor=t.border }}>
 
               <div style={{ height:6, background:sc?.bg||t.accentGrad }} />
 
-              {/* Edit/Delete buttons — admin only */}
-              {user.role === 'admin' && (
-                <div style={{ position:'absolute', top:14, right:14, display:'flex', gap:6, zIndex:10 }}
-                  onClick={e => e.stopPropagation()}>
-                  <button onClick={() => setEditProj(p)} title="Editează proiect"
-                    style={{ width:28, height:28, borderRadius:7, background:`${t.accent}18`, border:`1px solid ${t.accent}44`, color:t.accent, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', fontSize:13 }}>✏</button>
-                  <button onClick={() => setDeleteProj(p)} title="Șterge proiect"
-                    style={{ width:28, height:28, borderRadius:7, background:`${t.red}12`, border:`1px solid ${t.red}33`, color:t.red, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', fontSize:13 }}>🗑</button>
-                </div>
-              )}
-
-              <div style={{ padding:24 }}>
+              <div style={{ padding: isMobile ? 16 : 24 }}>
+                {/* Title row */}
                 <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:14 }}>
-                  <div style={{ flex:1, minWidth:0, marginRight:user.role==='admin'?72:12 }}>
+                  <div style={{ flex:1, minWidth:0, marginRight:12 }}>
                     <h3 style={{ fontSize:15, fontWeight:700, color:t.text, margin:'0 0 6px', lineHeight:1.3 }}>{p.name}</h3>
                     <span style={{ fontSize:11, color:t.accent, fontWeight:700, fontFamily:"'DM Mono',monospace", background:`${t.accent}18`, padding:'2px 8px', borderRadius:6 }}>{p.certificat}</span>
                   </div>
@@ -317,15 +307,26 @@ export default function ProjectList({ user, projects, onOpen, onAdd, onDelete, o
                   </div>
                 </div>
 
+                {/* Bottom row: expiry + edit/delete */}
                 <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
                   <span style={{ fontSize:12, color:expWarn?t.orange:t.muted, fontWeight:expWarn?700:400 }}>
                     ⏰ {fmt(p.dataExpirare)} {expWarn?`(${expDays}z)`:''}
                   </span>
-                  {od > 0 && (
-                    <span style={{ background:`${t.red}18`, color:t.red, fontSize:11, fontWeight:700, padding:'3px 10px', borderRadius:8, border:`1px solid ${t.red}33` }}>
-                      ⚠ {od} depășit{od>1?'e':''}
-                    </span>
-                  )}
+                  <div style={{ display:'flex', alignItems:'center', gap:6 }}>
+                    {od > 0 && (
+                      <span style={{ background:`${t.red}18`, color:t.red, fontSize:11, fontWeight:700, padding:'3px 8px', borderRadius:8, border:`1px solid ${t.red}33` }}>
+                        ⚠ {od}
+                      </span>
+                    )}
+                    {user.role === 'admin' && (
+                      <div style={{ display:'flex', gap:5 }} onClick={e => e.stopPropagation()}>
+                        <button onClick={() => setEditProj(p)} title="Editează"
+                          style={{ width:30, height:30, borderRadius:8, background:`${t.accent}18`, border:`1px solid ${t.accent}44`, color:t.accent, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', fontSize:14 }}>✏</button>
+                        <button onClick={() => setDeleteProj(p)} title="Șterge"
+                          style={{ width:30, height:30, borderRadius:8, background:`${t.red}12`, border:`1px solid ${t.red}33`, color:t.red, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', fontSize:14 }}>🗑</button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
