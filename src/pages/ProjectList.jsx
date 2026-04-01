@@ -5,12 +5,18 @@ import { fmt, isOD, dLeft } from '../lib/data'
 
 // ── Claude API — extrage date din PDF-ul CU ───────────────────────
 async function extractFromCU(pdfFile) {
+  const MAX_SIZE = 4_000_000 // 4MB base64 limit safe for Vercel
+
   const base64 = await new Promise((res, rej) => {
     const r = new FileReader()
     r.onload = () => res(r.result.split(',')[1])
-    r.onerror = rej
+    r.onerror = () => rej(new Error('Nu s-a putut citi fișierul.'))
     r.readAsDataURL(pdfFile)
   })
+
+  if (base64.length > MAX_SIZE) {
+    throw new Error(`PDF prea mare pentru extragere automată (${(pdfFile.size/1024/1024).toFixed(1)}MB). Comprimă documentul la sub 3MB sau completează manual.`)
+  }
 
   const response = await fetch('/api/extract-cu', {
     method: 'POST',
@@ -18,12 +24,13 @@ async function extractFromCU(pdfFile) {
     body: JSON.stringify({ pdfBase64: base64 }),
   })
 
+  const data = await response.json().catch(() => ({ error: 'Răspuns invalid de la server.' }))
+
   if (!response.ok) {
-    const err = await response.json().catch(() => ({}))
-    throw new Error(err.error || 'Server error')
+    throw new Error(data.error || `Eroare server (${response.status})`)
   }
 
-  return await response.json()
+  return data
 }
 
 // ── Modal Proiect Nou ─────────────────────────────────────────────
@@ -58,7 +65,7 @@ function AddProjectModal({ onClose, onSave, t }) {
       }))
       setExtracted(true)
     } catch (err) {
-      setError('Nu s-a putut extrage automat. Completează manual câmpurile.')
+      setError(err.message || 'Nu s-a putut extrage automat. Completează manual câmpurile.')
     } finally {
       setLoading(false)
     }
